@@ -13,7 +13,7 @@ $patterns = array(
         'change_after' => 'div'  //置換後
     ],
     'facilities' => [ //名前
-        'select' => '/faci(liti)es/s', //選択
+        'select' => '/faci(l(i(t))i)es/s', //選択
         'change_after' => 'aaa'  //置換後
     ],
     'class' => [ //名前
@@ -28,17 +28,16 @@ echo $content;
 $preg_match_contents = array();
 $new_preg_match_contents = array();
 foreach ( $patterns as $key => $value ) {
-    // コンテンツから削除する部分の抜き出し
-    preg_match_all( $value[ 'select' ], $content, $preg_match_contents[ $key ] );
-    // グループ化された最後のコンテンツ（変化する場所）
-    $change_before = '/' . $preg_match_contents[ $key ][ count($preg_match_contents[ $key ]) - 1 ][ 0 ] . '/s';
+    // コンテンツから変換する部分の抜き出し
+    preg_match_all( $value[ 'select' ], $content, $preg_match_contents );
+    $last_index = array_keys( $preg_match_contents, end( $preg_match_contents ) );
+    // 変換する場所の指定
+    $change_before = '/' . $preg_match_contents[ $last_index[ 0 ] ][ 0 ] . '/s';
     // 変更後のコンテンツを作成
-    $new_preg_match_contents = preg_replace( $change_before, $value[ 'change_after' ], $preg_match_contents[ $key ][ 0 ]);
+    $new_preg_match_contents = preg_replace( $change_before, $value[ 'change_after' ], $preg_match_contents[ 0 ] );
     // 変換前と変換後を入れ替え
-    $content = str_replace( $preg_match_contents[ $key ][ 0 ], $new_preg_match_contents, $content );
+    $content = str_replace( $preg_match_contents[ 0 ], $new_preg_match_contents, $content );
 }
-
-
 
 echo "\n変更後\n";
 echo $content;
