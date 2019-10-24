@@ -1,0 +1,21 @@
+<?php
+
+$content = 'test text';
+
+$patterns = array(
+    'content_area' => [ //–¼‘O
+        'select_contents' => '/test/s', //‘I‘ð
+        'delete_contents' => '/es/s'  //‘I‘ð‚µ‚½•¨‚Ì’†‚©‚çíœ
+    ]
+);
+
+
+$preg_match_contents = array();
+$new_preg_match_contents = array();
+foreach ( $patterns as $key => $value ) {
+    preg_match_all( $value[ 'select_contents' ], $content, $preg_match_contents[ $key ] );
+    $new_preg_match_contents = preg_replace( $value[ 'delete_contents' ], '', $preg_match_contents[ $key ][ 0 ]);
+    $content = str_replace( $preg_match_contents[ $key ][ 0 ], $new_preg_match_contents, $content );
+}
+
+var_dump($content);
