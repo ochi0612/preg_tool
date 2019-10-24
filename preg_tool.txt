@@ -1,21 +1,44 @@
 <?php
 
-$content = 'test text';
+$content = '
+    <li class="facilities-icon-off">
+        <span class="facilities-item baby-bed"></span>
+        <span class="facilities-info-text">ベビーベッド</span>
+    </li>
+';
 
 $patterns = array(
-    'content_area' => [ //名前
-        'select_contents' => '/test/s', //選択
-        'delete_contents' => '/es/s'  //選択した物の中から削除
+    'li' => [ //名前
+        'select' => '/<(li|\/li)/s', //選択
+        'change_after' => 'div'  //置換後
+    ],
+    'facilities' => [ //名前
+        'select' => '/faci(liti)es/s', //選択
+        'change_after' => 'aaa'  //置換後
+    ],
+    'class' => [ //名前
+        'select' => '/class/s', //選択
+        'change_after' => 'id'  //置換後
     ]
 );
 
+echo "変更前\n";
+echo $content;
 
 $preg_match_contents = array();
 $new_preg_match_contents = array();
 foreach ( $patterns as $key => $value ) {
-    preg_match_all( $value[ 'select_contents' ], $content, $preg_match_contents[ $key ] );
-    $new_preg_match_contents = preg_replace( $value[ 'delete_contents' ], '', $preg_match_contents[ $key ][ 0 ]);
+    // コンテンツから削除する部分の抜き出し
+    preg_match_all( $value[ 'select' ], $content, $preg_match_contents[ $key ] );
+    // グループ化された最後のコンテンツ（変化する場所）
+    $change_before = '/' . $preg_match_contents[ $key ][ count($preg_match_contents[ $key ]) - 1 ][ 0 ] . '/s';
+    // 変更後のコンテンツを作成
+    $new_preg_match_contents = preg_replace( $change_before, $value[ 'change_after' ], $preg_match_contents[ $key ][ 0 ]);
+    // 変換前と変換後を入れ替え
     $content = str_replace( $preg_match_contents[ $key ][ 0 ], $new_preg_match_contents, $content );
 }
 
-var_dump($content);
+
+
+echo "\n変更後\n";
+echo $content;
